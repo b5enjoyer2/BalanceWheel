@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Wheel</title>
+    <link rel="icon" href="/static/icon.png"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .container {
+            text-align: center;
+            margin: 20px auto;
+        }
+        .chart-container {
+            display: inline-block;
+            margin: 20px;
+            width: 600px;
+            height: 700px;
+            vertical-align: top;
+            padding-bottom: 40px;
+        }
+        .color-bar-container {
+            margin-top: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .color-bar {
+            display: flex;
+            align-items: center;
+            margin: 10px auto;
+            width: 80%;
+            height: 20px;
+            border: 1px solid #ccc;
+        }
+        .color-bar .fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        .color-bar-label {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 50px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        .sector-label {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Колеса баланса</h1>
+        <h2>{{ department_name }} - {{ year }}</h2>
+        <div id="charts-container"></div>
+        <a href="/" class="back-button">Вернуться назад</a>
+    </div>
+
+    <script>
+        const data = {{ average_results|tojson }};
+        const labels = ["Личностный рост", "Здоровье", "Любовь", "Секс", "Работа", "Отдых", "Деньги", "Отношения"];
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+        const container = document.getElementById('charts-container');
+
+        data.forEach(result => {
+            const chartContainer = document.createElement('div');
+            chartContainer.classList.add('chart-container');
+            chartContainer.style.position = 'relative';
+            container.appendChild(chartContainer);
+
+            const monthLabel = document.createElement('h3');
+            monthLabel.innerText = monthNames[result.month - 1];
+            monthLabel.style.textAlign = 'center';
+            chartContainer.appendChild(monthLabel);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 400;
+            chartContainer.appendChild(canvas);
+
+            const getColor = (value) => {
+                if (value <= 4) return "rgba(255, 0, 0, 0.5)";
+                if (value <= 6) return "rgba(255, 165, 0, 0.5)";
+                if (value <= 8) return "rgba(0, 255, 0, 0.5)";
+                return "rgba(0, 128, 255, 0.5)";
+            };
+
+            const getColorForAnxiety = (value) => {
+                if (value <= 4) return "rgba(0, 255, 0, 0.5)"; // Зеленый
+                if (value <= 6) return "rgba(255, 165, 0, 0.5)"; // Оранжевый
+                if (value <= 8) return "rgba(255, 69, 0, 0.5)"; // Красный
+                return "rgba(255, 0, 0, 0.5)"; // Темно-красный
+            };
+
+            const values = [
+                result.personal_growth, result.health, result.love, result.sex,
+                result.work, result.rest, result.money, result.relationships
+            ];
+            const colors = values.map(getColor);
+
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 1,
+                        borderColor: "rgba(0, 0, 0, 0.8)"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+
+            const centerX = canvas.width / 2 - 65;
+            const centerY = canvas.height / 2 - 50;
+            const radius = 230;
+            const offsetAngle = Math.PI / 7;
+
+            labels.forEach((label, index) => {
+                const angle = (index / labels.length) * (2 * Math.PI) - Math.PI / 2 + offsetAngle;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+
+                const labelDiv = document.createElement('div');
+                labelDiv.classList.add('sector-label');
+                labelDiv.style.left = `${x}px`;
+                labelDiv.style.top = `${y}px`;
+                labelDiv.innerText = label;
+
+                chartContainer.appendChild(labelDiv);
+            });
+
+            const addColorBar = (label, value, isAnxiety = false) => {
+                const colorBarContainer = document.createElement('div');
+                colorBarContainer.classList.add('color-bar-container');
+
+                const colorBar = document.createElement('div');
+                colorBar.classList.add('color-bar');
+
+                const fill = document.createElement('div');
+                fill.classList.add('fill');
+                fill.style.width = `${value * 10}%`;
+                fill.style.backgroundColor = isAnxiety ? getColorForAnxiety(value) : getColor(value);
+                colorBar.appendChild(fill);
+
+                const barLabel = document.createElement('div');
+                barLabel.classList.add('color-bar-label');
+                barLabel.innerText = `${label}: ${value}`;
+
+                colorBarContainer.appendChild(colorBar);
+                colorBarContainer.appendChild(barLabel);
+                chartContainer.appendChild(colorBarContainer);
+            };
+
+            addColorBar('Смысл жизни', result.life_purpose.toFixed(2));
+            addColorBar('Тревожность', result.anxiety.toFixed(2), true);
+        });
+    </script>
+</body>
+</html>

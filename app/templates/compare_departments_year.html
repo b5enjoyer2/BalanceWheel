@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение по месяцам</title>
+    <link rel="icon" href="/static/icon.png"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Сравнение показателей за {{ year }}</h1>
+        <a href="/" class="back-button">Вернуться назад</a>
+    </div>
+
+    <div>
+        <canvas id="chart"></canvas>
+    </div>
+    
+    <script>
+        const parameters = {{ parameters | tojson }};  // Названия параметров
+        const months = {{ months | tojson }};         // Месяцы
+        const datasets = {{ datasets | tojson }};     // Данные для графика
+    
+        const ctx = document.getElementById("chart").getContext("2d");
+        new Chart(ctx, {
+            type: "line",  // Линейный график
+            data: {
+                labels: months,  // Месяцы на горизонтальной оси
+                datasets: datasets.map(dataset => ({
+                    label: dataset.label,  // Название параметра
+                    data: dataset.data,    // Значения параметра
+                    borderColor: dataset.borderColor,  // Цвет линии
+                    fill: false            // Без заливки
+                }))
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Показатели отдела за ${year}`
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true  // Начинаем с нуля
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

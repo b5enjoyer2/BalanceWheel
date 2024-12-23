@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/icon.png"/>
+    <title>Survey Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            margin-top: 150px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            margin-top: auto;
+            margin-bottom: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        form {
+            display: grid;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select, input[type="text"], input[type="submit"], input[type="button"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .radio-group label {
+            font-weight: normal;
+            margin-right: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <!-- Подключаем библиотеку Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Форма опроса</h1>
+        <form id="survey-form" action="/survey_results/add" method="post">
+            <label for="department">Отдел:</label>
+            <select name="department_id" id="department" required>
+                {% for department in departments %}
+                    <option value="{{ department.id }}">{{ department.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="full_name">ФИО:</label>
+            <input type="text" id="full_name" name="full_name" required>
+
+            <!-- Здоровье -->
+            <label>Здоровье (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="health{{ i }}" name="health" value="{{ i }}" required>
+                        <label for="health{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Любовь -->
+            <label>Любовь (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="love{{ i }}" name="love" value="{{ i }}" required>
+                        <label for="love{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Секс -->
+            <label>Секс (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="sex{{ i }}" name="sex" value="{{ i }}" required>
+                        <label for="sex{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Работа -->
+            <label>Работа (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="work{{ i }}" name="work" value="{{ i }}" required>
+                        <label for="work{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Отдых -->
+            <label>Отдых (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="rest{{ i }}" name="rest" value="{{ i }}" required>
+                        <label for="rest{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Деньги -->
+            <label>Деньги (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="money{{ i }}" name="money" value="{{ i }}" required>
+                        <label for="money{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Отношения -->
+            <label>Отношения (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="relationships{{ i }}" name="relationships" value="{{ i }}" required>
+                        <label for="relationships{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Личностный рост -->
+            <label>Личностный рост (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="personal_growth{{ i }}" name="personal_growth" value="{{ i }}" required>
+                        <label for="personal_growth{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Смысл жизни -->
+            <label>Смысл жизни (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="life_purpose{{ i }}" name="life_purpose" value="{{ i }}" required>
+                        <label for="life_purpose{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Тревожность -->
+            <label>Тревожность (0 - 10):</label>
+            <div class="radio-group">
+                {% for i in range(11) %}
+                    <div>
+                        <input type="radio" id="anxiety{{ i }}" name="anxiety" value="{{ i }}" required>
+                        <label for="anxiety{{ i }}">{{ i }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Кнопка для предварительного просмотра -->
+            <div id="balance-wheel-container" style="text-align: center; margin-top: 20px;">
+                <h2>Предварительный просмотр</h2>
+                <input type="button" id="preview-button" value="Предварительный просмотр" onclick="previewBalanceWheel();">
+                <input type="button" id="hide-button" value="Скрыть" onclick="hideBalanceWheel();" style="display: none;">
+                
+                <canvas id="balance-wheel-canvas" width="400" height="400"></canvas>
+            </div>
+            
+            <input type="submit" value="Отправить">
+        </form>
+        <div class="button-container">
+            <button onclick="window.location.href='/';">Назад</button>
+        </div>
+    </div>
+
+    <script>
+        function previewBalanceWheel() {
+            const formData = new FormData(document.getElementById('survey-form'));
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value);  // Преобразуем в число
+            });
+    
+            // Данные для графика
+            const labels = [
+                "Личностный рост", "Здоровье", "Любовь", "Секс", "Работа",
+                "Отдых", "Деньги", "Отношения", "Смысл жизни", "Тревожность"
+            ];
+    
+            const values = [
+                data.personal_growth, data.health, data.love, data.sex,
+                data.work, data.rest, data.money, data.relationships,
+                data.life_purpose, data.anxiety
+            ];
+    
+            // Функция для получения цвета в зависимости от значения
+            const getColor = (value) => {
+                if (value <= 4) return "rgba(255, 0, 0, 0.5)"; // Красный
+                if (value <= 6) return "rgba(255, 165, 0, 0.5)"; // Оранжевый
+                if (value <= 8) return "rgba(0, 255, 0, 0.5)"; // Зеленый
+                return "rgba(0, 128, 255, 0.5)"; // Синий
+            };
+    
+            const colors = values.map(getColor);
+    
+            // Создаем canvas для отображения колеса
+            const canvas = document.getElementById('balance-wheel-canvas');
+            const ctx = canvas.getContext('2d');
+    
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 1,
+                        borderColor: "rgba(0, 0, 0, 0.8)"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 10,
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+    
+            // Показываем кнопку "Скрыть"
+            document.getElementById('hide-button').style.display = 'inline-block';
+        }
+
+        function hideBalanceWheel() {
+            document.getElementById('balance-wheel-container').style.display = 'none';
+            document.getElementById('hide-button').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>

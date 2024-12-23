@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Wheel</title>
+    <link rel="icon" href="/static/icon.png"/>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1><a href="/" style="text-decoration: none; color: inherit;">Колесо баланса</a></h1>
+        {% if message %}
+        <div class="message">{{ message }}</div>
+        {% endif %}
+        
+        <!-- Навигация -->
+        <div class="navigation">
+            <a href="/survey_form" class="nav-link">Форма</a>
+            <form action="/balance_wheel" method="get">
+                <label for="department_id">Отдел:</label>
+                <select name="department_id" id="department_id">
+                    {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="year">Год:</label>
+                <select name="year" id="year">
+                    {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            
+                <button type="submit" style="margin-top: 10px;">Показать колесо баланса</button>
+            </form>
+            
+            <form action="/balance_wheel/all_departments" method="get">
+                <label for="year_all_departments">Год:</label>
+                <select name="year" id="year_all_departments">
+                    {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" style="margin-top: 10px;">Показать колесо баланса для всех отделов</button>
+            </form>
+
+            <form action="/compare_departments" method="get">
+                <label for="department_comparison">Отдел:</label>
+                <select name="department_id" id="department_comparison">
+                    {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            
+                <label for="year_comparison">Год:</label>
+                <select name="year" id="year_comparison">
+                    {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" style="margin-top: 10px;">Показать график отдела</button>
+            </form>
+            
+
+        </div>
+        
+        <div class="intro">
+            <h2>Добро пожаловать!</h2>
+            <p>Выберите один из вариантов выше, чтобы заполнить форму опроса или посмотреть колёса баланса.</p>
+        </div>
+    </div>
+
+</body>
+</html>

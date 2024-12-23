@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Сравнение отделов</title>
+    <link rel="icon" href="/static/icon.png"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        canvas {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Статистика отдела: {{ specific_department_name }} за {{ year }}</h1>
+        <a href="/" class="back-button">Вернуться назад</a>
+    </div>
+
+    <div>
+        <canvas id="departmentChart"></canvas>
+    </div>
+    
+    <script>
+        const chartData = {{ chart_data | tojson }};
+        const ctx = document.getElementById('departmentChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Динамика показателей за год`
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
