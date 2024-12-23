@@ -351,8 +351,9 @@ async def compare_departments(request: Request, year: int, department_id: int = 
         "chart_data": chart_data
     })
     
+
 if __name__ == "__main__":
     import uvicorn
-    port = os.getenv("PORT", "8000")  # Логирование значения PORT
-    print(f"Starting server on port {port}")
-    uvicorn.run(app, host="0.0.0.0", port=int(port))
+    port = int(os.getenv("PORT", 8000))  # Преобразуем значение PORT в число с дефолтом 8000
+    print(f"Starting server on port {port}")  # Логируем порт
+    uvicorn.run(app, host="0.0.0.0", port=port)
