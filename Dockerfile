@@ -16,14 +16,10 @@ ENV DB_NAME=postgres
 # Копируем все файлы проекта в контейнер
 COPY . /deploy
 
-# Устанавливаем рабочую директорию в папку /deploy/app
 WORKDIR /deploy/app
 
 # Устанавливаем зависимости из requirements.txt
 RUN pip install --no-cache-dir -r /deploy/requirements.txt
 
-# Устанавливаем переменную окружения для порта (по умолчанию 8000)
-ENV PORT 8000
-
 # Команда для запуска FastAPI с uvicorn
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port $PORT"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
