@@ -350,3 +350,8 @@ async def compare_departments(request: Request, year: int, department_id: int = 
         "specific_department_name": specific_department_name,
         "chart_data": chart_data
     })
+    
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))  # Получаем порт из переменной окружения или используем 8000 по умолчанию
+    uvicorn.run(app, host="0.0.0.0", port=port)
